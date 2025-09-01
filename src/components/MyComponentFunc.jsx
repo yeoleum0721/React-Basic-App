@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 
 const MyComponentFunc = ({ name, children }) => {
     //useState() 함수사용
@@ -7,9 +7,12 @@ const MyComponentFunc = ({ name, children }) => {
         message: '',
         username: ''
     });
+    const [valid,setValid] = useState(false)
+    const [messageArr,setMessageArr] = useState(['Angular','React','Vue','Ember'])
+    const myUsername = useRef(null)
 
     const { message, username } = inputs;
-
+const messageList = messageArr.map((msg,idx) => (<li key={idx}>{msg}</li>));
     //event handlers
     const handleChange = (e) => {
         setInputs({
@@ -17,6 +20,17 @@ const MyComponentFunc = ({ name, children }) => {
             [e.target.name]: e.target.value
         });
     };
+    const handleEnter = (e) => {
+        if(e.keyCode === 13){
+            setValid(true);
+            setMessageArr([...messageArr, message])
+            setInputs({
+                ...inputs,
+                message: ''
+            });
+            myUsername.current.focus();
+        }
+    }
 
     return (
         <div>
@@ -27,10 +41,16 @@ const MyComponentFunc = ({ name, children }) => {
             <button onClick={() => (setValue(value + 1))}>증가</button>
             <button onClick={() => (setValue(value - 1))}>감소</button>
             <br />
+            <ul>
+                {messageList}
+            </ul>
             <p>상태변수 message = {message}</p>
-            <input name="message" value={message} onChange={handleChange} />
+            <input name="message" value={message} onChange={handleChange} onKeyDown ={handleEnter}/>
             <p>상태변수 username = {username}</p>
-            <input name="username" value={username} onChange={handleChange} />
+            <input name="username" value={username} onChange={handleChange} 
+                className={valid ? 'success':'failure'}
+                ref = {myUsername}
+            />
 
         </div>
     );

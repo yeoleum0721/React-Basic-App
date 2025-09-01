@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-
 import './MyComponent.css';
 
 class MyComponent extends Component {
@@ -9,7 +8,8 @@ class MyComponent extends Component {
         value: 0,
         message: '',
         username: '',
-        isValid : false,
+        isValid: false,
+        messageArr: ['Angular','React','Vue','Ember']
     };
     //event handler 함수선언
     // handleDecrement = function (){    
@@ -18,6 +18,7 @@ class MyComponent extends Component {
         value: this.state.value - 1
       })
     }; //handleDecrement
+    
     handleChange = (e) => {
         this.setState({
             /*
@@ -28,11 +29,26 @@ class MyComponent extends Component {
         })
     }; //handleChange
 
+    handleEnter = (e) => {
+        const { message, messageArr } = this.state;
+
+        if(e.keyCode === 13){
+            this.setState({
+                isValid: true,
+                messageArr: [...messageArr, message],
+                //첫번째 Input 엘리먼트 필드 초기화
+                message: ''
+            });
+            this.myUsername.focus();            
+        }
+    } //handleEnter
+
     render() {
         //destructuring assignment 
         const { name, age } = this.props;
-        const { value, message, username, isValid } = this.state;
-        const { handleDecrement, handleChange } = this;
+        const { value, message, username, isValid, messageArr } = this.state;
+        const { handleDecrement, handleChange, handleEnter } = this;
+        const messageList = messageArr.map((msg,idx) => (<li key={idx}>{msg}</li>));
 
         return (
             <div>
@@ -45,13 +61,17 @@ class MyComponent extends Component {
                 <button onClick={handleDecrement}>감소</button>
                 <br/>
                 <p>상태변수 message = {message}</p>
-                <input name="message" value={message} onChange={handleChange} 
-                    className={isValid ? 'success' : 'failure'}
-                />
+                <input name="message" value={message} onChange={handleChange} onKeyDown={handleEnter} />
+                <br/>
+                <ul>
+                    {messageList}
+                </ul>
                 <p>상태변수 username = {username}</p>
                 <input name="username" value={username} onChange={handleChange} 
-                    className={isValid ? 'success' : 'failure'}
+                    className={isValid ? 'success':'failure'}
+                    ref={(ref) => this.myUsername=ref}
                 />
+
             </div>
         );
     }
